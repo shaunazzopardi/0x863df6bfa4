@@ -1,0 +1,2 @@
+# 0x863df6bfa4
+The self-destructed multi-signature wallet library 0x863df6bfa4469f3ead0be8f9f2aae51c91a907b4
