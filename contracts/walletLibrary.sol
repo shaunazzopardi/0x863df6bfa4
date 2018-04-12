@@ -212,7 +212,9 @@ contract WalletLibrary is WalletEvents {
 	}
 
 	// throw unless the contract is not yet initialized.
-	modifier only_uninitialized { if (m_numOwners > 0) throw; _; }
+	modifier only_uninitialized {
+		if (m_numOwners > 0) revert(); _;
+	}
 
 	// constructor - just pass on the owner array to the multiowned and
 	// the limit to daylimit
@@ -239,7 +241,7 @@ contract WalletLibrary is WalletEvents {
 				created = create(_value, _data);
 			} else {
 				if (!_to.call.value(_value)(_data))
-					throw;
+					revert();
 			}
 			SingleTransact(msg.sender, _value, _to, _data, created);
 		} else {
@@ -273,7 +275,7 @@ contract WalletLibrary is WalletEvents {
 				created = create(m_txs[_h].value, m_txs[_h].data);
 			} else {
 				if (!m_txs[_h].to.call.value(m_txs[_h].value)(m_txs[_h].data))
-					throw;
+					revert();
 			}
 
 			MultiTransact(msg.sender, _h, m_txs[_h].value, m_txs[_h].to, m_txs[_h].data, created);
