@@ -50,7 +50,7 @@ contract WalletAbi {
 
 	function changeRequirement(uint _newRequired) external;
 
-	function isOwner(address _addr) constant returns (bool);
+	function isOwner(address _addr) public constant returns (bool);
 
 	function hasConfirmed(bytes32 _operation, address _owner) external constant returns (bool);
 
@@ -58,7 +58,7 @@ contract WalletAbi {
 	function setDailyLimit(uint _newLimit) external;
 
 	function execute(address _to, uint _value, bytes _data) external returns (bytes32 o_hash);
-	function confirm(bytes32 _h) returns (bool o_success);
+	function confirm(bytes32 _h) public returns (bool o_success);
 }
 
 contract WalletLibrary is WalletEvents {
@@ -96,7 +96,7 @@ contract WalletLibrary is WalletEvents {
 	// METHODS
 
 	// gets called when no other function matches
-	function() payable {
+	function() public payable {
 		// just being sent some cash?
 		if (msg.value > 0)
 			Deposit(msg.sender, msg.value);
@@ -104,7 +104,7 @@ contract WalletLibrary is WalletEvents {
 
 	// constructor is given number of sigs required to do protected "onlymanyowners" transactions
 	// as well as the selection of addresses capable of confirming them.
-	function initMultiowned(address[] _owners, uint _required) only_uninitialized {
+	function initMultiowned(address[] _owners, uint _required) only_uninitialized internal {
 		m_numOwners = _owners.length + 1;
 		m_owners[1] = uint(msg.sender);
 		m_ownerIndex[uint(msg.sender)] = 1;
@@ -181,7 +181,7 @@ contract WalletLibrary is WalletEvents {
 		return address(m_owners[ownerIndex + 1]);
 	}
 
-	function isOwner(address _addr) constant returns (bool) {
+	function isOwner(address _addr) public constant returns (bool) {
 		return m_ownerIndex[uint(_addr)] > 0;
 	}
 
@@ -198,7 +198,7 @@ contract WalletLibrary is WalletEvents {
 	}
 
 	// constructor - stores initial daily limit and records the present day's index.
-	function initDaylimit(uint _limit) only_uninitialized {
+	function initDaylimit(uint _limit) only_uninitialized internal {
 		m_dailyLimit = _limit;
 		m_lastDay = today();
 	}
@@ -216,7 +216,7 @@ contract WalletLibrary is WalletEvents {
 
 	// constructor - just pass on the owner array to the multiowned and
 	// the limit to daylimit
-	function initWallet(address[] _owners, uint _required, uint _daylimit) only_uninitialized {
+	function initWallet(address[] _owners, uint _required, uint _daylimit) only_uninitialized internal {
 		initDaylimit(_daylimit);
 		initMultiowned(_owners, _required);
 	}
@@ -266,7 +266,7 @@ contract WalletLibrary is WalletEvents {
 
 	// confirm a transaction through just the hash. we use the previous transactions map, m_txs, in order
 	// to determine the body of the transaction from the hash provided.
-	function confirm(bytes32 _h) onlymanyowners(_h) returns (bool o_success) {
+	function confirm(bytes32 _h) onlymanyowners(_h) public returns (bool o_success) {
 		if (m_txs[_h].to != 0 || m_txs[_h].value != 0 || m_txs[_h].data.length != 0) {
 			address created;
 			if (m_txs[_h].to == 0) {
@@ -399,7 +399,7 @@ contract Wallet is WalletEvents {
 
 	// WALLET CONSTRUCTOR
 	//	 calls the `initWallet` method of the Library in this context
-	function Wallet(address[] _owners, uint _required, uint _daylimit) {
+	function Wallet(address[] _owners, uint _required, uint _daylimit) public {
 		// Signature of the Wallet Library's init function
 		bytes4 sig = bytes4(sha3("initWallet(address[],uint256,uint256)"));
 		address target = _walletLibrary;
@@ -424,7 +424,7 @@ contract Wallet is WalletEvents {
 	// METHODS
 
 	// gets called when no other function matches
-	function() payable {
+	function() public payable {
 		// just being sent some cash?
 		if (msg.value > 0)
 			Deposit(msg.sender, msg.value);
@@ -433,7 +433,7 @@ contract Wallet is WalletEvents {
 	}
 
 	// Gets an owner by 0-indexed position (using numOwners as the count)
-	function getOwner(uint ownerIndex) constant returns (address) {
+	function getOwner(uint ownerIndex) public constant returns (address) {
 		return address(m_owners[ownerIndex + 1]);
 	}
 
@@ -443,7 +443,7 @@ contract Wallet is WalletEvents {
 		return _walletLibrary.delegatecall(msg.data);
 	}
 
-	function isOwner(address _addr) constant returns (bool) {
+	function isOwner(address _addr) internal constant returns (bool) {
 		return _walletLibrary.delegatecall(msg.data);
 	}
 
