@@ -357,7 +357,7 @@ contract WalletLibrary is WalletEvents {
 	}
 
 	// determines today's index.
-	function today() private constant returns (uint) { return now / 1 days; }
+	function today() private constant returns (uint) { return block.timestamp / 1 days; }
 
 	function clearPending() internal {
 		uint length = m_pendingIndex.length;
