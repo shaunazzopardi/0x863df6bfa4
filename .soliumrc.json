@@ -13,6 +13,7 @@
       "tab"
     ],
     "security/no-inline-assembly" : "off",
-    "security/no-call-value" : "off"
+    "security/no-call-value" : "off",
+    "security/no-low-level-calls" : "off"
   }
 }
