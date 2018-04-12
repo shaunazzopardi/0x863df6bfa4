@@ -12,9 +12,9 @@
       "error",
       "tab"
     ],
-    "security/no-inline-assembly" : "off",
-    "security/no-call-value" : "off",
-    "security/no-low-level-calls" : "off",
-    "security/no-block-members" : "off"
+    "security/no-inline-assembly" : "warning",
+    "security/no-call-value" : "warning",
+    "security/no-low-level-calls" : "warning",
+    "security/no-block-members" : "warning"
   }
 }
