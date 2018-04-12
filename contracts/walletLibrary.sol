@@ -131,7 +131,7 @@ contract WalletLibrary is WalletEvents {
 	}
 
 	// Replaces an owner `_from` with another `_to`.
-	function changeOwner(address _from, address _to) onlymanyowners(sha3(msg.data)) external {
+	function changeOwner(address _from, address _to) onlymanyowners(keccak256(msg.data)) external {
 		if (isOwner(_to)) return;
 		uint ownerIndex = m_ownerIndex[uint(_from)];
 		if (ownerIndex == 0) return;
@@ -143,7 +143,7 @@ contract WalletLibrary is WalletEvents {
 		OwnerChanged(_from, _to);
 	}
 
-	function addOwner(address _owner) onlymanyowners(sha3(msg.data)) external {
+	function addOwner(address _owner) onlymanyowners(keccak256(msg.data)) external {
 		if (isOwner(_owner)) return;
 
 		clearPending();
@@ -157,7 +157,7 @@ contract WalletLibrary is WalletEvents {
 		OwnerAdded(_owner);
 	}
 
-	function removeOwner(address _owner) onlymanyowners(sha3(msg.data)) external {
+	function removeOwner(address _owner) onlymanyowners(keccak256(msg.data)) external {
 		uint ownerIndex = m_ownerIndex[uint(_owner)];
 		if (ownerIndex == 0) return;
 		if (m_required > m_numOwners - 1) return;
@@ -169,7 +169,7 @@ contract WalletLibrary is WalletEvents {
 		OwnerRemoved(_owner);
 	}
 
-	function changeRequirement(uint _newRequired) onlymanyowners(sha3(msg.data)) external {
+	function changeRequirement(uint _newRequired) onlymanyowners(keccak256(msg.data)) external {
 		if (_newRequired > m_numOwners) return;
 		m_required = _newRequired;
 		clearPending();
@@ -203,11 +203,11 @@ contract WalletLibrary is WalletEvents {
 		m_lastDay = today();
 	}
 	// (re)sets the daily limit. needs many of the owners to confirm. doesn't alter the amount already spent today.
-	function setDailyLimit(uint _newLimit) onlymanyowners(sha3(msg.data)) external {
+	function setDailyLimit(uint _newLimit) onlymanyowners(keccak256(msg.data)) external {
 		m_dailyLimit = _newLimit;
 	}
 	// resets the amount already spent today. needs many of the owners to confirm.
-	function resetSpentToday() onlymanyowners(sha3(msg.data)) external {
+	function resetSpentToday() onlymanyowners(keccak256(msg.data)) external {
 		m_spentToday = 0;
 	}
 
@@ -222,7 +222,7 @@ contract WalletLibrary is WalletEvents {
 	}
 
 	// kills the contract sending everything to `_to`.
-	function kill(address _to) onlymanyowners(sha3(msg.data)) external {
+	function kill(address _to) onlymanyowners(keccak256(msg.data)) external {
 		suicide(_to);
 	}
 
@@ -244,7 +244,7 @@ contract WalletLibrary is WalletEvents {
 			SingleTransact(msg.sender, _value, _to, _data, created);
 		} else {
 			// determine our operation hash.
-			o_hash = sha3(msg.data, block.number);
+			o_hash = keccak256(msg.data, block.number);
 			// store if it's new
 			if (m_txs[o_hash].to == 0 && m_txs[o_hash].value == 0 && m_txs[o_hash].data.length == 0) {
 				m_txs[o_hash].to = _to;
@@ -401,7 +401,7 @@ contract Wallet is WalletEvents {
 	//	 calls the `initWallet` method of the Library in this context
 	function Wallet(address[] _owners, uint _required, uint _daylimit) public {
 		// Signature of the Wallet Library's init function
-		bytes4 sig = bytes4(sha3("initWallet(address[],uint256,uint256)"));
+		bytes4 sig = bytes4(keccak256("initWallet(address[],uint256,uint256)"));
 		address target = _walletLibrary;
 
 		// Compute the size of the call data : arrays has 2
@@ -443,7 +443,7 @@ contract Wallet is WalletEvents {
 		return _walletLibrary.delegatecall(msg.data);
 	}
 
-	function isOwner(address _addr) internal constant returns (bool) {
+	function isOwner(address _addr) public constant returns (bool) {
 		return _walletLibrary.delegatecall(msg.data);
 	}
 
