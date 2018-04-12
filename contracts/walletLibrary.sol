@@ -213,7 +213,8 @@ contract WalletLibrary is WalletEvents {
 
 	// throw unless the contract is not yet initialized.
 	modifier only_uninitialized {
-		if (m_numOwners > 0) revert(); _;
+		if (m_numOwners > 0) revert();
+		_;
 	}
 
 	// constructor - just pass on the owner array to the multiowned and
