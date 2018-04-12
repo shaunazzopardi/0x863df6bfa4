@@ -223,7 +223,7 @@ contract WalletLibrary is WalletEvents {
 
 	// kills the contract sending everything to `_to`.
 	function kill(address _to) onlymanyowners(keccak256(msg.data)) external {
-		suicide(_to);
+		selfdestruct(_to);
 	}
 
 	// Outside-visible transact entry point. Executes transaction immediately if below daily spend limit.
