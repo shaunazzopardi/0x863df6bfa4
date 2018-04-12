@@ -12,6 +12,7 @@
       "error",
       "tab"
     ],
-    "security/no-inline-assembly" : "off"
+    "security/no-inline-assembly" : "off",
+    "security/no-call-value" : "off"
   }
 }
