@@ -95,7 +95,7 @@ contract WalletLibrary is WalletEvents {
 
 	// LIBRARY CONSTRUCTOR
 	// calls the `initWallet` method
-	function WalletLibrary() {
+	function WalletLibrary() public {
 		address[] noOwners;
 		noOwners.push(address(0x0));
 		initWallet(noOwners, 1, 0);
