@@ -221,11 +221,6 @@ contract WalletLibrary is WalletEvents {
 		initMultiowned(_owners, _required);
 	}
 
-	// kills the contract sending everything to `_to`.
-	function kill(address _to) onlymanyowners(sha3(msg.data)) external {
-		suicide(_to);
-	}
-
 	// Outside-visible transact entry point. Executes transaction immediately if below daily spend limit.
 	// If not, goes into multisig process. We provide a hash on return to allow the sender to provide
 	// shortcuts for the other confirmations (allowing them to avoid replicating the _to, _value
