@@ -69,6 +69,14 @@ contract WalletLibrary is WalletEvents {
 			_;
 	}
 
+	// LIBRARY CONSTRUCTOR
+	// calls the `initWallet` method
+	function WalletLibrary() {
+		address[] noOwners;
+		noOwners.push(address(0x0));
+		initWallet(noOwners, 1, 0);
+	}
+
 	// METHODS
 
 	// gets called when no other function matches
@@ -80,14 +88,14 @@ contract WalletLibrary is WalletEvents {
 
 	// constructor is given number of sigs required to do protected "onlymanyowners" transactions
 	// as well as the selection of addresses capable of confirming them.
-	function initMultiowned(address[] _owners, uint _required) only_uninitialized {
-		m_numOwners = _owners.length + 1;
-		m_owners[1] = uint(msg.sender);
-		m_ownerIndex[uint(msg.sender)] = 1;
+	function initMultiowned(address[] _owners, uint _required) only_uninitialized internal {
+		require(_required > 0);
+		require(_owners.length >= _required);
+		m_numOwners = _owners.length;
 		for (uint i = 0; i < _owners.length; ++i)
 		{
-			m_owners[2 + i] = uint(_owners[i]);
-			m_ownerIndex[uint(_owners[i])] = 2 + i;
+			m_owners[1 + i] = uint(_owners[i]);
+			m_ownerIndex[uint(_owners[i])] = 1 + i;
 		}
 		m_required = _required;
 	}
@@ -174,7 +182,7 @@ contract WalletLibrary is WalletEvents {
 	}
 
 	// constructor - stores initial daily limit and records the present day's index.
-	function initDaylimit(uint _limit) only_uninitialized {
+	function initDaylimit(uint _limit) only_uninitialized internal {
 		m_dailyLimit = _limit;
 		m_lastDay = today();
 	}
@@ -192,7 +200,7 @@ contract WalletLibrary is WalletEvents {
 
 	// constructor - just pass on the owner array to the multiowned and
 	// the limit to daylimit
-	function initWallet(address[] _owners, uint _required, uint _daylimit) only_uninitialized {
+	function initWallet(address[] _owners, uint _required, uint _daylimit) only_uninitialized internal {
 		initDaylimit(_daylimit);
 		initMultiowned(_owners, _required);
 	}
