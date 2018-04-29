@@ -189,9 +189,10 @@ contract WalletLibrary is WalletEvents {
 		return address(m_owners[ownerIndex + 1]);
 	}
 
-	function isOwner(address _addr) constant returns (bool) {
-		return m_ownerIndex[uint(_addr)] > 0;
-	}
+    function isOwner(address _addr) constant returns(bool){
+      require(m_ownerIndex[uint(_addr)] > 0);
+      return true;
+    }
 
 	function hasConfirmed(bytes32 _operation, address _owner) external constant returns (bool) {
 		var pending = m_pending[_operation];
